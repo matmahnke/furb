@@ -1,56 +1,69 @@
-import re
-
-caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-texto = '';
-chave = '';
+caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def validarTexto(txt):
-  valido = 0;
+  global caracteres
   for letraInput in txt:
-    existeLetra = 0;
+    existeLetra = 0
     for letraCaracteres in caracteres: 
-      if(letraInput == letraCaracteres):
-        existeLetra = 1;
-    if(existeLetra):
-      valido = 1;
-  return valido;
+      if(letraInput.upper() == letraCaracteres):
+        existeLetra = 1
+        break
+    if not existeLetra:
+      return 0
+  return 1
 
-def encriptarTexto():
-  i = 0;
-  result = '';
+def encriptarTexto(chave, texto):
+  global caracteres
+  idx_chave = 0
+  i = 0
+  result = ''
   for letra in texto:
-    indexInput = caracteres.index(letra)
-    indexChave = caracteres.index(chave[i])
-    result = result + caracteres[(indexChave + indexInput) % len(caracteres)]
-    i = i + 1;
-  return result;
+    if idx_chave >= len(chave):
+      idx_chave = 0
+    if validarTexto(letra):
+      indexInput = caracteres.index(letra.upper())
+      indexChave = caracteres.index(chave[idx_chave].upper())
+      result = result + caracteres[(indexChave + indexInput) % len(caracteres)]
+      idx_chave += 1
+    else:
+      result += letra
+    i = i + 1 
+  return result
 
-def decriptarTexto():
-  i = 0;
-  result = '';
+def decriptarTexto(chave, texto):
+  global caracteres
+  i = 0
+  result = ''
+  idx_chave = 0
   for letra in texto:
-    indexInput = caracteres.index(letra)
-    indexChave = caracteres.index(chave[i])
-    result = result + caracteres[(indexInput - indexChave + len(caracteres)) % len(caracteres)]
-  return result;
+    if idx_chave >= len(chave):
+      idx_chave = 0
+    if validarTexto(letra):
+      indexInput = caracteres.index(letra.upper())
+      indexChave = caracteres.index(chave[idx_chave].upper())
+      result = result + caracteres[(indexInput - indexChave + len(caracteres)) % len(caracteres)]
+      idx_chave += 1
+    else:
+      result += letra
+    i = i + 1 
+  return result
 
-print("Cifra de Vigenère.")
-txt = input("Informe um texto com letras e números:")
+def app():
+  print("Cifra de Vigenère.")
+  txt = input("Informe o texto com letras e números que será operado:")
 
-if(validarTexto(txt)):
-  texto = txt;
-  chave = input("Informe a chave:");
+  texto = txt
+  chave = input("Informe a chave:")
   if(validarTexto(chave)):
     resposta = input("Deseja cifrar ou decifrar?\nResponda com C para cifrar ou D para decifrar:");
-    result = '';
+    result = ''
 
     if(resposta.upper() == 'C'):
-      result = encriptarTexto();
+      result = encriptarTexto(chave, texto)
     if(resposta.upper() == 'D'):
-      result = decriptarTexto();
+      result = decriptarTexto(chave, texto)
+    print("Resultado: "+ result)
+  else:
+    print("Chave inválida")
 
-    print("Resultado: "+ result);
-
-
-else:
-  print("Texto inválido");
+app()
